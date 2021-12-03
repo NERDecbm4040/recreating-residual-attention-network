@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras as keras
-import tensorflow.keras.preprocessing as preprocessing
+
+from sklearn.model_selection import train_test_split
 
 def normalize(x):
     x = x.astype("float32")
@@ -18,7 +19,7 @@ def preprocess_dataset(x_train, y_train, x_test, y_test):
     x_train, y_train, x_test, y_test
     
     :return:
-    preprocessed x_train, y_train, x_test, y_test
+    preprocessed x_train, y_train, x_val, y_val, x_test, y_test
     '''
 
     # normalize pixel value
@@ -36,19 +37,22 @@ def preprocess_dataset(x_train, y_train, x_test, y_test):
     x_train = x_train.astype(np.float32)
     x_test = x_test.astype(np.float32)
 
-    return x_train, y_train, x_test, y_test
+    #create validation data from training data
+    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.20, stratify=y_train, random_state=42, shuffle=True)
 
-def get_cifar10(**kwargs):
+    return x_train, y_train, x_val, y_val, x_test, y_test
+
+def get_cifar10(*preproc_layers):
     '''
-    Load CIFAR data with preprocessing and image datagen
+    Load CIFAR 10 data with preprocessing and image datagen
     
     :param:
-    Input for ImageDataGenerator, example:
-        rotation_range=20,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        horizontal_flip=True,
-        validation_split=0.2
+    List of data augmentation layers, example:
+        [
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ]
 
     :return:
     x_train, y_train, x_test, y_test, datagen
@@ -57,9 +61,18 @@ def get_cifar10(**kwargs):
 
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
     
-    x_train, y_train, x_test, y_test = preprocess_dataset(x_train, y_train, x_test, y_test)
+    x_train, y_train, x_val, y_val, x_test, y_test = preprocess_dataset(x_train, y_train, x_test, y_test)
 
-    datagen = preprocessing.image.ImageDataGenerator(**kwargs)
-    datagen.fit(x_train)
+    input_shape = x_train.shape[1:]
+    num_class = y_train.shape[1]
 
-    return x_train, y_train, x_test, y_test, datagen
+    # data augmentation layers
+    data_aug = keras.Sequential(
+        *preproc_layers
+    )
+
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val))
+    test_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test))
+
+    return input_shape, num_class, train_ds, val_ds, test_ds, data_aug
