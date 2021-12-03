@@ -152,7 +152,7 @@ class Attention56(ResidualAttentionNetwork):
     Implementation of Attention 56 using Residual Attention Network Model
     """
     def __init__(
-        self, input_shape=(32,32,3), num_class=10, dropout=0.4, regularization=0.01, learning_type='arl',
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=0.01, learning_type='arl',
         data_augmentation=[
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
@@ -164,19 +164,31 @@ class Attention56(ResidualAttentionNetwork):
         :params:
         1. input_shape -> 3 elements tuple (height, width, channel) of input image
         2. num_class -> number of output class
-        3. dropout -> Float between 0 and 1, Fraction of the input units to drop
-        4. regularization -> L2 regularizer value
-        5. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
-        6. data_augmentation -> list containing data augmentation as a layer
+        3. dataset -> baseline dataset for architecture: 'imagenet' or 'cifar'
+        4. dropout -> Float between 0 and 1, Fraction of the input units to drop
+        5. regularization -> L2 regularizer value
+        6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        7. data_augmentation -> list containing data augmentation as a layer
         """
+
+        if dataset=='imagenet':
+            channels=[64, 256, 512, 1024, 2048]
+            num_blocks=[1, 1, 1]
+        elif dataset=='cifar':
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[1, 1, 1]
+        else:
+            print("Error, not implemented, using CIFAR architecture instead")
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[1, 1, 1]
 
         super(Attention56, self).__init__(
             input_shape=input_shape,
             num_class=num_class,
             data_augmentation=data_augmentation,
             # Fix number of channels and attention blocks
-            channels=[64, 256, 512, 1024, 2048],
-            num_blocks=[1, 1, 1],
+            channels=channels,
+            num_blocks=num_blocks,
             dropout=dropout,
             regularization=regularization,
             learning_type=learning_type
@@ -187,7 +199,7 @@ class Attention92(ResidualAttentionNetwork):
     Implementation of Attention 92 using Residual Attention Network Model
     """
     def __init__(
-        self, input_shape=(32,32,3), num_class=10, dropout=0.4, regularization=0.01, learning_type='arl',
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
         data_augmentation=[
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
@@ -199,19 +211,119 @@ class Attention92(ResidualAttentionNetwork):
         :params:
         1. input_shape -> 3 elements tuple (height, width, channel) of input image
         2. num_class -> number of output class
-        3. dropout -> Float between 0 and 1, Fraction of the input units to drop
-        4. regularization -> L2 regularizer value
-        5. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
-        6. data_augmentation -> list containing data augmentation as a layer
+        3. dataset -> baseline dataset for architecture: 'imagenet' or 'cifar'
+        4. dropout -> Float between 0 and 1, Fraction of the input units to drop
+        5. regularization -> L2 regularizer value
+        6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        7. data_augmentation -> list containing data augmentation as a layer
         """
+        
+        if dataset=='imagenet':
+            channels=[64, 256, 512, 1024, 2048]
+            num_blocks=[1, 2, 3]
+        elif dataset=='cifar':
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[2, 2, 2]
+        else:
+            print("Error, not implemented, using CIFAR architecture instead")
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[2, 2, 2]
 
         super(Attention92, self).__init__(
             input_shape=input_shape,
             num_class=num_class,
             data_augmentation=data_augmentation,
             # Fix number of channels and attention blocks
-            channels=[64, 256, 512, 1024, 2048],
-            num_blocks=[1, 2, 3],
+            channels=channels,
+            num_blocks=num_blocks,
+            dropout=dropout,
+            regularization=regularization,
+            learning_type=learning_type
+        )
+
+class Attention128(ResidualAttentionNetwork):
+    """
+    Implementation of Attention 128 using Residual Attention Network Model
+    """
+    def __init__(
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
+        data_augmentation=[
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ]
+    ):
+        
+        """
+        :params:
+        1. input_shape -> 3 elements tuple (height, width, channel) of input image
+        2. num_class -> number of output class
+        3. dataset -> baseline dataset for architecture: 'imagenet' or 'cifar'
+        4. dropout -> Float between 0 and 1, Fraction of the input units to drop
+        5. regularization -> L2 regularizer value
+        6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        7. data_augmentation -> list containing data augmentation as a layer
+        """
+        
+        if dataset=='cifar':
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[3, 3, 3]
+        else:
+            print("Error, not implemented, using CIFAR architecture instead")
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[3, 3, 3]
+
+        super(Attention128, self).__init__(
+            input_shape=input_shape,
+            num_class=num_class,
+            data_augmentation=data_augmentation,
+            # Fix number of channels and attention blocks
+            channels=channels,
+            num_blocks=num_blocks,
+            dropout=dropout,
+            regularization=regularization,
+            learning_type=learning_type
+        )
+
+class Attention164(ResidualAttentionNetwork):
+    """
+    Implementation of Attention 164 using Residual Attention Network Model
+    """
+    def __init__(
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
+        data_augmentation=[
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ]
+    ):
+        
+        """
+        :params:
+        1. input_shape -> 3 elements tuple (height, width, channel) of input image
+        2. num_class -> number of output class
+        3. dataset -> baseline dataset for architecture: 'imagenet' or 'cifar'
+        4. dropout -> Float between 0 and 1, Fraction of the input units to drop
+        5. regularization -> L2 regularizer value
+        6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        7. data_augmentation -> list containing data augmentation as a layer
+        """
+        
+        if dataset=='cifar':
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[4, 4, 4]
+        else:
+            print("Error, not implemented, using CIFAR architecture instead")
+            channels=[32, 128, 256, 512, 1024]
+            num_blocks=[4, 4, 4]
+
+        super(Attention164, self).__init__(
+            input_shape=input_shape,
+            num_class=num_class,
+            data_augmentation=data_augmentation,
+            # Fix number of channels and attention blocks
+            channels=channels,
+            num_blocks=num_blocks,
             dropout=dropout,
             regularization=regularization,
             learning_type=learning_type

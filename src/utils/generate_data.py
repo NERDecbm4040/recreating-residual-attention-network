@@ -76,3 +76,38 @@ def get_cifar10(*preproc_layers):
     test_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
     return input_shape, num_class, train_ds, val_ds, test_ds, data_aug
+
+def get_cifar100(*preproc_layers):
+    '''
+    Load CIFAR 100 data with preprocessing and image datagen
+    
+    :param:
+    List of data augmentation layers, example:
+        [
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ]
+
+    :return:
+    x_train, y_train, x_test, y_test, datagen
+    
+    '''
+
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar100.load_data()
+    
+    x_train, y_train, x_val, y_val, x_test, y_test = preprocess_dataset(x_train, y_train, x_test, y_test)
+
+    input_shape = x_train.shape[1:]
+    num_class = y_train.shape[1]
+
+    # data augmentation layers
+    data_aug = keras.Sequential(
+        *preproc_layers
+    )
+
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    val_ds = tf.data.Dataset.from_tensor_slices((x_val, y_val))
+    test_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test))
+
+    return input_shape, num_class, train_ds, val_ds, test_ds, data_aug
