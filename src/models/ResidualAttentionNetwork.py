@@ -1,3 +1,4 @@
+from scipy.sparse import data
 from tensorflow import keras
 from tensorflow.keras import layers, regularizers
 
@@ -14,6 +15,11 @@ class ResidualAttentionNetwork(keras.Model):
         self, 
         input_shape=(32,32,3), 
         num_class=10, 
+        data_augmentation=[
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ],
         channels=[32, 64, 128, 256, 512], 
         num_blocks=[1,1,1],
         dropout=None,
@@ -27,21 +33,22 @@ class ResidualAttentionNetwork(keras.Model):
         :params:
         1. input_shape -> 3 elements tuple (height, width, channel) of input image
         2. num_class -> number of output class
-        3. channels -> list of number of channel for each layer: 
+        3. data_augmentation -> list containing data augmentation as a layer
+        4. channels -> list of number of channel for each layer: 
             convolutional layer, 
             residual-attention stage1, 
             residual-attention stage2, 
             residual-attention stage3, 
             pre-activation residual units
-        4. num_blocks -> number of attention module in each residual-attention stage
-        5. dropout -> Float between 0 and 1, Fraction of the input units to drop
-        6. regularization -> L2 regularizer value
+        5. num_blocks -> number of attention module in each residual-attention stage
+        6. dropout -> Float between 0 and 1, Fraction of the input units to drop
+        7. regularization -> L2 regularizer value
 
         # Attention Module Parameters
-        7. p -> number of preprocessing residual units in each stage
-        8. t -> number of residual units in the trunk branch
-        9. r -> number of residual units between adjacent pooling layer in the soft mask branch
-        10. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        8. p -> number of preprocessing residual units in each stage
+        9. t -> number of residual units in the trunk branch
+        10. r -> number of residual units between adjacent pooling layer in the soft mask branch
+        11. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
         """
         
         super(ResidualAttentionNetwork, self).__init__(**kwargs)
@@ -54,6 +61,9 @@ class ResidualAttentionNetwork(keras.Model):
         self.num_blocks = num_blocks
         
         ### Initialize layers needed
+
+        # data augmentation layers
+        self.data_augmentation = keras.Sequential(data_augmentation)
 
         # Convolutional Layer
         self.conv1 = layers.Conv2D(filters=self.channels[0], input_shape=input_shape, kernel_size=3, strides=1, padding='same', use_bias=False)
@@ -102,6 +112,8 @@ class ResidualAttentionNetwork(keras.Model):
         Forward pass for the network.
         """
         
+        x = self.data_augmentation(x)
+
         x = self.conv1(x)
         x = self.batch_norm1(x)
         x = self.conv1_activation(x)
@@ -139,7 +151,14 @@ class Attention56(ResidualAttentionNetwork):
     """
     Implementation of Attention 56 using Residual Attention Network Model
     """
-    def __init__(self, input_shape=(32,32,3), num_class=10, dropout=0.4, regularization=0.01, learning_type='arl'):
+    def __init__(
+        self, input_shape=(32,32,3), num_class=10, dropout=0.4, regularization=0.01, learning_type='arl',
+        data_augmentation=[
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ]
+    ):
         
         """
         :params:
@@ -148,11 +167,13 @@ class Attention56(ResidualAttentionNetwork):
         3. dropout -> Float between 0 and 1, Fraction of the input units to drop
         4. regularization -> L2 regularizer value
         5. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        6. data_augmentation -> list containing data augmentation as a layer
         """
 
         super(Attention56, self).__init__(
             input_shape=input_shape,
             num_class=num_class,
+            data_augmentation=data_augmentation,
             # Fix number of channels and attention blocks
             channels=[64, 256, 512, 1024, 2048],
             num_blocks=[1, 1, 1],
@@ -165,7 +186,14 @@ class Attention92(ResidualAttentionNetwork):
     """
     Implementation of Attention 92 using Residual Attention Network Model
     """
-    def __init__(self, input_shape=(32,32,3), num_class=10, dropout=0.4, regularization=1e-5, learning_type='arl'):
+    def __init__(
+        self, input_shape=(32,32,3), num_class=10, dropout=0.4, regularization=0.01, learning_type='arl',
+        data_augmentation=[
+            layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
+            layers.experimental.preprocessing.RandomRotation(0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+        ]
+    ):
         
         """
         :params:
@@ -174,11 +202,13 @@ class Attention92(ResidualAttentionNetwork):
         3. dropout -> Float between 0 and 1, Fraction of the input units to drop
         4. regularization -> L2 regularizer value
         5. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
+        6. data_augmentation -> list containing data augmentation as a layer
         """
 
         super(Attention92, self).__init__(
             input_shape=input_shape,
             num_class=num_class,
+            data_augmentation=data_augmentation,
             # Fix number of channels and attention blocks
             channels=[64, 256, 512, 1024, 2048],
             num_blocks=[1, 2, 3],
