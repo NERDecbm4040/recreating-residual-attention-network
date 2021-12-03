@@ -9,7 +9,7 @@ class AttentionModule(layers.Layer):
     based on https://arxiv.org/abs/1704.06904
     """
 
-    def __init__(self, channels=64, stage=0, p=1, t=2, r=1, **kwargs):
+    def __init__(self, channels=64, stage=0, p=1, t=2, r=1, learning_type='arl', **kwargs):
         
         """
         :params:
@@ -18,6 +18,7 @@ class AttentionModule(layers.Layer):
         3. p -> number of preprocessing residual units in each stage
         4. t -> number of residual units in the trunk branch
         5. r -> number of residual units between adjacent pooling layer in the soft mask branch
+        6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
         """
         
         super(AttentionModule, self).__init__(**kwargs)
@@ -28,6 +29,7 @@ class AttentionModule(layers.Layer):
         self.r = r
         self.channels = channels
         self.stage = stage
+        self.learning_type = learning_type
 
         # First Residual Block
         for i in range(2*self.p):
@@ -45,17 +47,24 @@ class AttentionModule(layers.Layer):
         """
         Forward pass using soft mask branch and trunk branch.
         
-        Output Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x)
+        Output Hi,c(x) = (1 + Mi,c(x)) ∗ Fi,c(x) for ARL
+        Output Hi,c(x) = Mi,c(x) ∗ Fi,c(x) for NAL
         """
 
         for i in range(self.p):
             x = getattr(self, f'residual_units{i}')(x)
 
-        # Calculate # Attention: (1 + output_soft_mask) * output_trunk
         x_mask = self.mask_branch(x)
         x_trunk = self.trunk_branch(x)
-        x = self.multiply([x_mask, x_trunk])
-        x = self.add([x, x_trunk])
+
+        # Calculate Attention: 
+        if self.learning_type == 'arl':
+            # Residual Attention = (1 + output_soft_mask) * output_trunk
+            x = self.multiply([x_mask, x_trunk])
+            x = self.add([x, x_trunk])
+        elif self.learning_type == 'nal':
+            # Naive Attention = (output_soft_mask * output_trunk)
+            x = self.multiply([x_mask, x_trunk])
         
         for j in range(self.p):
             x = getattr(self, f'residual_units{i+j+1}')(x)

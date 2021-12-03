@@ -40,7 +40,7 @@ def preprocess_dataset(x_train, y_train, x_test, y_test):
 
 def get_cifar10(**kwargs):
     '''
-    Load CIFAR data with preprocessing and image datagen
+    Load CIFAR 10 data with preprocessing and image datagen
     
     :param:
     Input for ImageDataGenerator, example:
@@ -56,6 +56,32 @@ def get_cifar10(**kwargs):
     '''
 
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+    
+    x_train, y_train, x_test, y_test = preprocess_dataset(x_train, y_train, x_test, y_test)
+
+    datagen = preprocessing.image.ImageDataGenerator(**kwargs)
+    datagen.fit(x_train)
+
+    return x_train, y_train, x_test, y_test, datagen
+
+def get_cifar100(**kwargs):
+    '''
+    Load CIFAR 100 data with preprocessing and image datagen
+    
+    :param:
+    Input for ImageDataGenerator, example:
+        rotation_range=20,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        horizontal_flip=True,
+        validation_split=0.2
+
+    :return:
+    x_train, y_train, x_test, y_test, datagen
+    
+    '''
+
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar100.load_data()
     
     x_train, y_train, x_test, y_test = preprocess_dataset(x_train, y_train, x_test, y_test)
 
