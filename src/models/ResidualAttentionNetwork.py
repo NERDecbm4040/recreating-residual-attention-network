@@ -15,11 +15,11 @@ class ResidualAttentionNetwork(keras.Model):
         self, 
         input_shape=(32,32,3), 
         num_class=10, 
-        data_augmentation=[
+        data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
             layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
-        ],
+        ]),
         channels=[32, 64, 128, 256, 512], 
         num_blocks=[1,1,1],
         dropout=None,
@@ -33,7 +33,7 @@ class ResidualAttentionNetwork(keras.Model):
         :params:
         1. input_shape -> 3 elements tuple (height, width, channel) of input image
         2. num_class -> number of output class
-        3. data_augmentation -> list containing data augmentation as a layer
+        3. data_augmentation -> Keras Sequential data augmentation layer
         4. channels -> list of number of channel for each layer: 
             convolutional layer, 
             residual-attention stage1, 
@@ -63,7 +63,7 @@ class ResidualAttentionNetwork(keras.Model):
         ### Initialize layers needed
 
         # data augmentation layers
-        self.data_augmentation = keras.Sequential(data_augmentation)
+        self.data_augmentation = data_augmentation
 
         # Convolutional Layer
         self.conv1 = layers.Conv2D(filters=self.channels[0], input_shape=input_shape, kernel_size=3, strides=1, padding='same', use_bias=False)
@@ -153,11 +153,11 @@ class Attention56(ResidualAttentionNetwork):
     """
     def __init__(
         self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=0.01, learning_type='arl',
-        data_augmentation=[
+        data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
             layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
-        ]
+        ])
     ):
         
         """
@@ -168,7 +168,7 @@ class Attention56(ResidualAttentionNetwork):
         4. dropout -> Float between 0 and 1, Fraction of the input units to drop
         5. regularization -> L2 regularizer value
         6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
-        7. data_augmentation -> list containing data augmentation as a layer
+        7. data_augmentation -> Keras Sequential data augmentation layer
         """
 
         if dataset=='imagenet':
@@ -200,11 +200,11 @@ class Attention92(ResidualAttentionNetwork):
     """
     def __init__(
         self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
-        data_augmentation=[
+        data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
             layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
-        ]
+        ])
     ):
         
         """
@@ -215,7 +215,7 @@ class Attention92(ResidualAttentionNetwork):
         4. dropout -> Float between 0 and 1, Fraction of the input units to drop
         5. regularization -> L2 regularizer value
         6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
-        7. data_augmentation -> list containing data augmentation as a layer
+        7. data_augmentation -> Keras Sequential data augmentation layer
         """
         
         if dataset=='imagenet':
@@ -247,11 +247,11 @@ class Attention128(ResidualAttentionNetwork):
     """
     def __init__(
         self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
-        data_augmentation=[
+        data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
             layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
-        ]
+        ])
     ):
         
         """
@@ -262,7 +262,7 @@ class Attention128(ResidualAttentionNetwork):
         4. dropout -> Float between 0 and 1, Fraction of the input units to drop
         5. regularization -> L2 regularizer value
         6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
-        7. data_augmentation -> list containing data augmentation as a layer
+        7. data_augmentation -> Keras Sequential data augmentation layer
         """
         
         if dataset=='cifar':
@@ -291,11 +291,11 @@ class Attention164(ResidualAttentionNetwork):
     """
     def __init__(
         self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
-        data_augmentation=[
+        data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
             layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
-        ]
+        ])
     ):
         
         """
@@ -306,7 +306,7 @@ class Attention164(ResidualAttentionNetwork):
         4. dropout -> Float between 0 and 1, Fraction of the input units to drop
         5. regularization -> L2 regularizer value
         6. learning_type -> arl for Attention Residual Learning, nal for Naive Attention Learning
-        7. data_augmentation -> list containing data augmentation as a layer
+        7. data_augmentation -> Keras Sequential data augmentation layer
         """
         
         if dataset=='cifar':
