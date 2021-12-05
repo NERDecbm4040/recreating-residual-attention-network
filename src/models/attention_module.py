@@ -1,7 +1,7 @@
 from tensorflow.keras import layers
 
 from .residual_unit import ResidualUnit
-from .attention_branch import TrunkBranch, MaskBranch
+from .attention_branch import TrunkBranch, MaskBranch, LocalConvMaskBranch
 
 class AttentionModule(layers.Layer):
     """
@@ -9,7 +9,7 @@ class AttentionModule(layers.Layer):
     based on https://arxiv.org/abs/1704.06904
     """
 
-    def __init__(self, channels=64, stage=0, p=1, t=2, r=1, learning_type='arl', **kwargs):
+    def __init__(self, channels=64, stage=0, p=1, t=2, r=1, learning_type='arl',mask_type='enc-dec', **kwargs):
         
         """
         :params:
@@ -30,13 +30,18 @@ class AttentionModule(layers.Layer):
         self.channels = channels
         self.stage = stage
         self.learning_type = learning_type
+        self.mask_type = mask_type
 
         # First Residual Block
         for i in range(2*self.p):
             setattr(self, f'residual_units{i}', ResidualUnit(self.channels))
             
+
         # Generate Mask and Trunk branches
-        self.mask_branch = MaskBranch(self.channels, r=self.r, stage=self.stage)
+        if mask_type == 'enc-dec':
+            self.mask_branch = MaskBranch(self.channels, r=self.r, stage=self.stage)
+        else:
+            self.mask_branch = LocalConvMaskBranch(self.channels, r=self.r, stage=self.stage)
         self.trunk_branch = TrunkBranch(self.channels, t=self.t)
 
         # used for mask branch layers

@@ -25,7 +25,8 @@ class ResidualAttentionNetwork(keras.Model):
         dropout=None,
         regularization=0.01,
         p=1, t=2, r=1, 
-        learning_type='arl', 
+        learning_type='arl',
+        mask_type = 'enc-dec', 
         **kwargs
     ):
         
@@ -59,6 +60,7 @@ class ResidualAttentionNetwork(keras.Model):
         self.learning_type = learning_type
         self.channels = channels
         self.num_blocks = num_blocks
+        self.mask_type = mask_type
         
         ### Initialize layers needed
 
@@ -75,19 +77,19 @@ class ResidualAttentionNetwork(keras.Model):
         self.residual_unit1 = ResidualUnit(channels=self.channels[1], strides=2)
         self.attention_module1 = []
         for _ in range(self.num_blocks[0]):
-            self.attention_module1.append(AttentionModule(channels=self.channels[1], stage=1, p=self.p, t=self.t, r=self.r, learning_type=self.learning_type))
+            self.attention_module1.append(AttentionModule(channels=self.channels[1], stage=1, p=self.p, t=self.t, r=self.r, learning_type=self.learning_type,mask_type=self.mask_type))
         
         # Residual-Attention stage 2
         self.residual_unit2 = ResidualUnit(channels=self.channels[2], strides=2)
         self.attention_module2 = []
         for _ in range(self.num_blocks[1]):
-            self.attention_module2.append(AttentionModule(channels=self.channels[2], stage=2, p=self.p, t=self.t, r=self.r, learning_type=self.learning_type))
+            self.attention_module2.append(AttentionModule(channels=self.channels[2], stage=2, p=self.p, t=self.t, r=self.r, learning_type=self.learning_type,mask_type=self.mask_type))
 
         # Residual-Attention stage 3
         self.residual_unit3 = ResidualUnit(channels=self.channels[3], strides=2)
         self.attention_module3 = []
         for _ in range(self.num_blocks[2]):
-            self.attention_module3.append(AttentionModule(channels=self.channels[3], stage=3, p=self.p, t=self.t, r=self.r, learning_type=self.learning_type))
+            self.attention_module3.append(AttentionModule(channels=self.channels[3], stage=3, p=self.p, t=self.t, r=self.r, learning_type=self.learning_type,mask_type=self.mask_type))
         
         # Pre-activation Residual Units
         self.residual_unit4 = ResidualUnit(channels=self.channels[4], strides=2)
@@ -152,7 +154,7 @@ class Attention56(ResidualAttentionNetwork):
     Implementation of Attention 56 using Residual Attention Network Model
     """
     def __init__(
-        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=0.01, learning_type='arl',
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=0.01, learning_type='arl',mask_type='enc-dec',
         data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
@@ -191,7 +193,8 @@ class Attention56(ResidualAttentionNetwork):
             num_blocks=num_blocks,
             dropout=dropout,
             regularization=regularization,
-            learning_type=learning_type
+            learning_type=learning_type,
+            mask_type = 'enc-dec',
         )
 
 class Attention92(ResidualAttentionNetwork):
@@ -199,7 +202,7 @@ class Attention92(ResidualAttentionNetwork):
     Implementation of Attention 92 using Residual Attention Network Model
     """
     def __init__(
-        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',mask_type='enc-dec',
         data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
@@ -238,7 +241,8 @@ class Attention92(ResidualAttentionNetwork):
             num_blocks=num_blocks,
             dropout=dropout,
             regularization=regularization,
-            learning_type=learning_type
+            learning_type=learning_type,
+            mask_type=mask_type
         )
 
 class Attention128(ResidualAttentionNetwork):
@@ -246,7 +250,7 @@ class Attention128(ResidualAttentionNetwork):
     Implementation of Attention 128 using Residual Attention Network Model
     """
     def __init__(
-        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',mask_type='enc-dec',
         data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
@@ -290,7 +294,7 @@ class Attention164(ResidualAttentionNetwork):
     Implementation of Attention 164 using Residual Attention Network Model
     """
     def __init__(
-        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',
+        self, input_shape=(32,32,3), num_class=10, dataset='cifar', dropout=0.4, regularization=1e-5, learning_type='arl',mask_type='enc-dec',
         data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
@@ -326,5 +330,6 @@ class Attention164(ResidualAttentionNetwork):
             num_blocks=num_blocks,
             dropout=dropout,
             regularization=regularization,
-            learning_type=learning_type
+            learning_type=learning_type,
+            mask_type='enc-dec'
         )
