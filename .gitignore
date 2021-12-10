@@ -130,3 +130,19 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# logs
+backup_logs/
+logs/
+logs3/
+logs4/
+logs5/
+logs6/
+NERD_dir/
+tmp/
+tuned_hyperParam_a56model_LR_003735621_valAcc_55-409/
+final_a56_fullModel_posthyperTuneLR_003735621/variables/variables.index
+final_a56_fullModel_posthyperTuneLR_003735621/variables/variables.data-00000-of-00001
+final_a56_fullModel_posthyperTuneLR_003735621/saved_model.pb
+final_a56_fullModel_posthyperTuneLR_003735621/keras_metadata.pb

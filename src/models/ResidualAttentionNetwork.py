@@ -18,7 +18,7 @@ class ResidualAttentionNetwork(keras.Model):
         data_augmentation=keras.Sequential([
             layers.experimental.preprocessing.RandomFlip(mode="horizontal"),
             layers.experimental.preprocessing.RandomRotation(0.2),
-            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2),
+            layers.experimental.preprocessing.RandomTranslation(height_factor=0.2, width_factor=0.2)
         ]),
         channels=[32, 64, 128, 256, 512], 
         num_blocks=[1,1,1],
